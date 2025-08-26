@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">RSSHub</h1>
 
-> 已支持自定义路由<中文链接>(https://github.com/AprilLemon/RSSHub/blob/master/PRIVATE_ROUTES_SUCCESS.md)
+> 现已支持自定义路由<中文链接>(https://github.com/AprilLemon/RSSHub/blob/master/PRIVATE_ROUTES_SUCCESS.md)
 
 > 🧡 Everything is RSSible
 
