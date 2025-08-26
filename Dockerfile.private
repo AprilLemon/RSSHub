@@ -1,0 +1,24 @@
+# 基于官方RSSHub镜像，添加私有路由支持
+FROM diygod/rsshub:latest
+
+# 设置维护者信息
+LABEL maintainer="610549251@qq.com"
+LABEL description="RSSHub with private routes support"
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制修改后的registry.ts文件
+COPY lib/registry.ts /app/lib/registry.ts
+
+# 创建私有路由目录
+RUN mkdir -p /app/lib/routes-private
+
+# 设置权限
+RUN chmod -R 755 /app/lib/routes-private
+
+# 暴露端口
+EXPOSE 1200
+
+# 使用开发模式启动
+CMD ["npm", "run", "dev"]

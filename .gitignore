@@ -25,6 +25,11 @@ node_modules
 tmp
 dist
 
+# Private routes (keep directory but ignore route files)
+lib/private/*.js
+lib/private/*.ts
+lib/private/*/
+
 Session.vim
 combined.log
 dump.rdb

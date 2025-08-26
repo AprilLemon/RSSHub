@@ -87,6 +87,65 @@ for (const namespace in namespaces) {
     }
 }
 
+// Handle private routes if they exist
+const privateRoutesPath = path.join(__dirname, '../../lib/private');
+if (fs.existsSync(privateRoutesPath)) {
+    try {
+        const privateModules = directoryImport({
+            targetDirectoryPath: privateRoutesPath,
+            importPattern: /\.(ts|js)$/,
+        });
+
+        // Process private modules similar to regular modules
+        for (const module in privateModules) {
+            const content = privateModules[module] as
+                | {
+                      route: any;
+                  }
+                | {
+                      namespace: any;
+                  };
+            const namespace = module.split(/[/\\]/)[1] || 'private';
+
+            if ('namespace' in content) {
+                namespaces[namespace] = Object.assign(
+                    {
+                        routes: {},
+                    },
+                    namespaces[namespace],
+                    content.namespace
+                );
+            } else if ('route' in content) {
+                if (!namespaces[namespace]) {
+                    namespaces[namespace] = {
+                        name: namespace,
+                        routes: {},
+                        apiRoutes: {},
+                    };
+                }
+
+                const routePath = module
+                    .split(/[/\\]/)
+                    .slice(2)
+                    .join('/')
+                    .replace(/\.(ts|js)$/, '');
+                namespaces[namespace].routes[`/${routePath}`] = Object.assign(
+                    {
+                        location: routePath,
+                    },
+                    content.route
+                );
+
+                // Add module import for private routes
+                namespaces[namespace].routes[`/${routePath}`].module = `() => import('@/private/${routePath}')`;
+            }
+        }
+    } catch (error) {
+        /* eslint-disable no-console */
+        console.warn('Warning: Could not process private routes:', error.message);
+    }
+}
+
 fs.writeFileSync(path.join(__dirname, '../../assets/build/radar-rules.json'), JSON.stringify(radar, null, 2));
 fs.writeFileSync(path.join(__dirname, '../../assets/build/radar-rules.js'), `(${toSource(radar)})`);
 fs.writeFileSync(path.join(__dirname, '../../assets/build/maintainers.json'), JSON.stringify(maintainers, null, 2));

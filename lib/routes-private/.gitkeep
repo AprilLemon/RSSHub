@@ -1,0 +1,2 @@
+# This file ensures the private directory is tracked by git
+# Private route files should be mounted via Docker volumes

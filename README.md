@@ -3,6 +3,8 @@
 </p>
 <h1 align="center">RSSHub</h1>
 
+> 已支持自定义路由<中文链接>(https://github.com/AprilLemon/RSSHub/blob/master/PRIVATE_ROUTES_SUCCESS.md)
+
 > 🧡 Everything is RSSible
 
 [![](https://img.shields.io/badge/dynamic/json?url=https://rsshub-analytics.diygod.workers.dev/&query=requests&color=F38020&label=requests&logo=cloudflare&style=flat-square&suffix=/month)](https://rsshub.app)

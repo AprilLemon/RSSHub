@@ -3,6 +3,7 @@ import { directoryImport } from 'directory-import';
 import { Hono, type Handler } from 'hono';
 import { routePath } from 'hono/route';
 import path from 'node:path';
+import fs from 'node:fs';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { config } from '@/config';
 
@@ -53,6 +54,7 @@ export type NamespacesType = Record<
 
 let namespaces: NamespacesType = {};
 
+const privateRoutesPath = path.join(__dirname, './routes-private');
 switch (process.env.NODE_ENV || process.env.VERCEL_ENV) {
     case 'production':
         namespaces = (await import('../assets/build/routes.js')).default;
@@ -70,6 +72,17 @@ switch (process.env.NODE_ENV || process.env.VERCEL_ENV) {
             targetDirectoryPath: path.join(__dirname, './routes'),
             importPattern: /\.ts$/,
         }) as typeof modules;
+
+        // Load private routes if directory exists
+        if (fs.existsSync(privateRoutesPath)) {
+            const privateModules = directoryImport({
+                targetDirectoryPath: privateRoutesPath,
+                importPattern: /\.(ts|js)$/,
+            }) as typeof modules;
+
+            // Merge private modules with main modules
+            Object.assign(modules, privateModules);
+        }
 }
 
 if (config.feature.disable_nsfw) {
