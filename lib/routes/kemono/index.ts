@@ -46,6 +46,10 @@ export const route: Route = {
             source: ['kemono.cr/:source/user/:id/fancards'],
             target: '/:source/:id/fancards',
         },
+        {
+            source: ['kemono.cr/discord/server/:id'],
+            target: '/discord/:id',
+        },
     ],
     name: 'Posts',
     maintainers: ['nczitzk', 'AiraNadih'],
@@ -59,7 +63,7 @@ export const route: Route = {
 ::: tip
   When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
   There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
-  
+
   Support for announcements and fancards:
   - Use \`/:source/:id/announcements\` to get announcements
   - Use \`/:source/:id/fancards\` to get fancards
@@ -197,6 +201,7 @@ async function processDiscordMessages(channels: any[], limit: number) {
 
                 return channelResponse.data
                     .filter((message: DiscordMessage) => message.content || message.attachments)
+                    .toSorted((a, b) => b.id.localeCompare(a.id))
                     .slice(0, limit)
                     .map((message: DiscordMessage) => ({
                         title: message.content || 'Discord Message',
