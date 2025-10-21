@@ -10,6 +10,7 @@ WORKDIR /app
 
 # 复制修改后的registry.ts文件
 COPY lib/registry.ts /app/lib/registry.ts
+COPY package.json /app/package.json
 
 # 创建私有路由目录
 RUN mkdir -p /app/lib/routes-private
@@ -21,4 +22,4 @@ RUN chmod -R 755 /app/lib/routes-private
 EXPOSE 1200
 
 # 使用开发模式启动
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev:private"]
