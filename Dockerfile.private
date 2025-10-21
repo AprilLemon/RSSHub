@@ -22,4 +22,4 @@ RUN chmod -R 755 /app/lib/routes-private
 EXPOSE 1200
 
 # 使用开发模式启动
-CMD ["npm", "run", "dev:private"]
+CMD ["npm", "run", "dev"]
