@@ -1,15 +1,17 @@
-# 基于官方RSSHub镜像，添加私有路由支持
-FROM diygod/rsshub:latest
+FROM node:alpine
 
 # 设置维护者信息
 LABEL maintainer="610549251@qq.com"
 LABEL description="RSSHub with private routes support"
 
+# 安装系统依赖
+RUN apk add --no-cache git
+
 # 设置工作目录
 WORKDIR /app
 
-# 设置淘宝镜像
-RUN npm config set registry https://registry.npmmirror.com/
+# 克隆 RSSHub 源码
+RUN git clone https://github.com/DIYgod/RSSHub.git . --depth=1
 
 # 复制修改后的registry.ts文件
 COPY lib/registry.ts /app/lib/registry.ts
@@ -17,15 +19,29 @@ COPY lib/registry.ts /app/lib/registry.ts
 # 创建私有路由目录
 RUN mkdir -p /app/lib/routes-private
 
-# 复制私有路由文件（如果有的话）
-# COPY lib/routes-private/ /app/lib/routes-private/
-
-# 复制package.json并安装依赖（如果需要额外依赖）
-COPY package.json /app/
-RUN npm install
-
 # 设置权限
 RUN chmod -R 755 /app/lib/routes-private
+
+# 先移除系统预装的 yarn 避免冲突
+RUN rm -f /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
+# 设置淘宝镜像并安装依赖
+RUN \
+    set -ex && \
+    if [ "$USE_CHINA_NPM_REGISTRY" = 1 ]; then \
+        npm config set registry https://registry.npmmirror.com && \
+        yarn config set registry https://registry.npmmirror.com && \
+        pnpm config set registry https://registry.npmmirror.com ; \
+    fi; \
+    npm install -g corepack@latest && \
+    corepack enable pnpm && \
+    pnpm add @vercel/nft@$(cat .nft_version) fs-extra@$(cat .fs_extra_version) --save-prod
+
+RUN \
+    set -ex && \
+    export PUPPETEER_SKIP_DOWNLOAD=true && \
+    pnpm install --frozen-lockfile && \
+    pnpm rb
 
 # 暴露端口
 EXPOSE 1200
