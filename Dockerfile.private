@@ -8,12 +8,21 @@ LABEL description="RSSHub with private routes support"
 # 设置工作目录
 WORKDIR /app
 
+# 设置淘宝镜像
+RUN npm config set registry https://registry.npmmirror.com/
+
 # 复制修改后的registry.ts文件
 COPY lib/registry.ts /app/lib/registry.ts
-COPY package.json /app/package.json
 
 # 创建私有路由目录
 RUN mkdir -p /app/lib/routes-private
+
+# 复制私有路由文件（如果有的话）
+# COPY lib/routes-private/ /app/lib/routes-private/
+
+# 复制package.json并安装依赖（如果需要额外依赖）
+COPY package.json /app/
+RUN npm install
 
 # 设置权限
 RUN chmod -R 755 /app/lib/routes-private
